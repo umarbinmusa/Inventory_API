@@ -1,9 +1,7 @@
 import { userResolvers } from "./user.js";
 import { categoryResolvers } from "./category.js";
-import { supplierResolvers } from "./supplier.js";
 import { customerResolvers } from "./customer.js";
 import { productResolvers } from "./product.js";
-import { purchaseResolvers } from "./purchase.js";
 import { saleResolvers } from "./sale.js";
 import { stockResolvers } from "./stock.js";
 import { notificationResolvers } from "./notification.js";
@@ -17,10 +15,8 @@ import { reorderResolvers } from "./reorder.js";
 const resolverModules = [
   userResolvers,
   categoryResolvers,
-  supplierResolvers,
   customerResolvers,
   productResolvers,
-  purchaseResolvers,
   saleResolvers,
   stockResolvers,
   notificationResolvers,

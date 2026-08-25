@@ -6,7 +6,6 @@ const productSchema = new mongoose.Schema(
     barcode: { type: String, trim: true, default: "" },
     productName: { type: String, required: true, trim: true },
     category: { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },
-    supplier: { type: mongoose.Schema.Types.ObjectId, ref: "Supplier", required: true },
     purchasePrice: { type: Number, required: true, min: 0 },
     sellingPrice: { type: Number, required: true, min: 0 },
     quantity: { type: Number, required: true, min: 0, default: 0 },
@@ -29,7 +28,6 @@ const productSchema = new mongoose.Schema(
 
 productSchema.index({ productName: "text", sku: "text", barcode: "text" });
 productSchema.index({ category: 1 });
-productSchema.index({ supplier: 1 });
 
 productSchema.virtual("stockStatus").get(function stockStatus() {
   if (this.quantity === 0) return "OUT_OF_STOCK";

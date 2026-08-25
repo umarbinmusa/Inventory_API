@@ -8,7 +8,6 @@ export const reorderTypeDefs = `#graphql
   type Reorder {
     id: ID!
     product: Product!
-    supplier: Supplier
     quantityAtRequest: Int!
     reorderLevelAtRequest: Int!
     suggestedQuantity: Int!
@@ -21,7 +20,6 @@ export const reorderTypeDefs = `#graphql
 
   input CreateReorderInput {
     productId: ID!
-    supplierId: ID
     suggestedQuantity: Int!
     notes: String
   }

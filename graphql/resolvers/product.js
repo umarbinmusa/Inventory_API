@@ -1,30 +1,22 @@
 import { GraphQLError } from "graphql";
 import Product from "../../models/Product.js";
 import Category from "../../models/Category.js";
-import Supplier from "../../models/Supplier.js";
 import { ROLES } from "../../config/roles.js";
 import { requireAuth, requireRole } from "../../middleware/auth.js";
 import { syncStockNotifications } from "../../utils/notifications.js";
 
-const POPULATE = ["category", "supplier"];
+const POPULATE = ["category"];
 
-const assertRefsExist = async (categoryId, supplierId) => {
-  const [category, supplier] = await Promise.all([
-    Category.findById(categoryId),
-    Supplier.findById(supplierId),
-  ]);
+const assertRefsExist = async (categoryId) => {
+  const category = await Category.findById(categoryId);
   if (!category) {
     throw new GraphQLError("Category not found.", { extensions: { code: "BAD_USER_INPUT" } });
   }
-  if (!supplier) {
-    throw new GraphQLError("Supplier not found.", { extensions: { code: "BAD_USER_INPUT" } });
-  }
 };
 
-const toProductDoc = ({ categoryId, supplierId, ...rest }) => ({
+const toProductDoc = ({ categoryId, ...rest }) => ({
   ...rest,
   ...(categoryId ? { category: categoryId } : {}),
-  ...(supplierId ? { supplier: supplierId } : {}),
 });
 
 export const productResolvers = {
@@ -113,7 +105,7 @@ export const productResolvers = {
   Mutation: {
     createProduct: async (_p, { input }, context) => {
       requireRole(context, [ROLES.ADMIN, ROLES.MANAGER, ROLES.STORE_KEEPER]);
-      await assertRefsExist(input.categoryId, input.supplierId);
+      await assertRefsExist(input.categoryId);
 
       const existingSku = await Product.findOne({ sku: input.sku.toUpperCase() });
       if (existingSku) {
@@ -128,7 +120,7 @@ export const productResolvers = {
 
     updateProduct: async (_p, { id, input }, context) => {
       requireRole(context, [ROLES.ADMIN, ROLES.MANAGER, ROLES.STORE_KEEPER]);
-      await assertRefsExist(input.categoryId, input.supplierId);
+      await assertRefsExist(input.categoryId);
 
       const product = await Product.findByIdAndUpdate(id, toProductDoc(input), {
         new: true,

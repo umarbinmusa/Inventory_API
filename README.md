@@ -41,4 +41,3 @@ npm run dev
 
 The frontend (delivered separately) currently runs against an in-memory mock (`src/context/DataContext.jsx`) with identical business logic to what's now implemented here. The natural next step is swapping each page's `useData()` calls for real Apollo `useQuery`/`useMutation` calls against this schema — happy to do that next.
 
-"# Inventory_API" 

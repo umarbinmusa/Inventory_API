@@ -8,7 +8,6 @@ import mongoose from "mongoose";
 const reorderSchema = new mongoose.Schema(
   {
     product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
-    supplier: { type: mongoose.Schema.Types.ObjectId, ref: "Supplier", default: null },
 
     // Snapshots taken when the reorder request was created, so the record
     // still makes sense even after stock moves around later.

@@ -1,20 +1,9 @@
 import multer from "multer";
-import path from "path";
-import fs from "fs";
-import crypto from "crypto";
 
-const UPLOAD_DIR = "uploads";
-if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, UPLOAD_DIR),
-  filename: (_req, file, cb) => {
-    const uniqueName = `${Date.now()}-${crypto.randomBytes(6).toString("hex")}${path.extname(
-      file.originalname
-    )}`;
-    cb(null, uniqueName);
-  },
-});
+// Memory storage only - the file never touches this server's disk. Its
+// buffer is handed straight to Cloudinary (see server.js's /api/upload
+// route), which is what actually stores and serves the image.
+const storage = multer.memoryStorage();
 
 const ALLOWED_MIME_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
 

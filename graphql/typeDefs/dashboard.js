@@ -2,7 +2,6 @@ export const dashboardTypeDefs = `#graphql
   type MonthlyFigure {
     month: String!
     sales: Float!
-    purchases: Float!
   }
 
   type CategoryStock {
@@ -13,9 +12,7 @@ export const dashboardTypeDefs = `#graphql
   type DashboardSummary {
     totalProducts: Int!
     totalCategories: Int!
-    totalSuppliers: Int!
     totalCustomers: Int!
-    totalPurchases: Int!
     totalSales: Int!
     revenue: Float!
     profit: Float!

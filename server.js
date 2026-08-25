@@ -9,6 +9,7 @@ import { expressMiddleware } from "@as-integrations/express4";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 
 import connectDB from "./config/db.js";
+import cloudinary from "./config/cloudinary.js";
 import schema from "./graphql/schema.js";
 import { buildContext } from "./middleware/auth.js";
 import { upload } from "./middleware/upload.js";
@@ -36,14 +37,12 @@ const startServer = async () => {
     })
   );
 
-  
-app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://app.assalamtelecom.com.ng"
-  ],
-  credentials: true
-}));
+  app.use(
+    cors({
+      origin: process.env.CLIENT_URL || "http://localhost:5173",
+      credentials: true,
+    })
+  );
 
   app.use(express.json({ limit: "5mb" }));
 
@@ -57,9 +56,6 @@ app.use(cors({
     message: { error: "Too many requests, please try again later." },
   });
   app.use("/graphql", limiter);
-
-  // Serve uploaded product images / QR codes / barcodes.
-  app.use("/uploads", express.static("uploads"));
 
   app.get("/health", (_req, res) => {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
@@ -78,10 +74,23 @@ app.use(cors({
     }
   };
 
-  app.post("/api/upload", requireAuthHeader, upload.single("file"), (req, res) => {
+  const uploadBufferToCloudinary = (buffer) =>
+    new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: "ledger-products", resource_type: "image" },
+        (err, result) => (err ? reject(err) : resolve(result))
+      );
+      stream.end(buffer);
+    });
+
+  app.post("/api/upload", requireAuthHeader, upload.single("file"), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: "No file uploaded." });
-    const url = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
-    res.json({ url });
+    try {
+      const result = await uploadBufferToCloudinary(req.file.buffer);
+      res.json({ url: result.secure_url, publicId: result.public_id });
+    } catch (err) {
+      res.status(502).json({ error: err.message || "Image upload to Cloudinary failed." });
+    }
   });
 
   app.use((err, req, res, next) => {

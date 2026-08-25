@@ -17,7 +17,6 @@ export const productTypeDefs = `#graphql
     barcode: String
     productName: String!
     category: Category!
-    supplier: Supplier!
     purchasePrice: Float!
     sellingPrice: Float!
     quantity: Int!
@@ -37,7 +36,6 @@ export const productTypeDefs = `#graphql
     barcode: String
     productName: String!
     categoryId: ID!
-    supplierId: ID!
     purchasePrice: Float!
     sellingPrice: Float!
     quantity: Int!

@@ -4,7 +4,7 @@ import Product from "../../models/Product.js";
 import { ROLES } from "../../config/roles.js";
 import { requireAuth, requireRole } from "../../middleware/auth.js";
 
-const POPULATE = [{ path: "product" }, { path: "supplier" }, { path: "requestedBy" }];
+const POPULATE = [{ path: "product" }, { path: "requestedBy" }];
 
 export const reorderResolvers = {
   Query: {
@@ -12,10 +12,7 @@ export const reorderResolvers = {
     // so it's always accurate even if no Reorder record has been created yet.
     reorderRequired: async (_p, _a, context) => {
       requireAuth(context);
-      const products = await Product.find({ status: { $ne: "DISCONTINUED" } }).populate([
-        "category",
-        "supplier",
-      ]);
+      const products = await Product.find({ status: { $ne: "DISCONTINUED" } }).populate(["category"]);
       return products.filter((p) => p.quantity <= p.minimumStock);
     },
 
@@ -42,7 +39,6 @@ export const reorderResolvers = {
 
       const reorder = await Reorder.create({
         product: product._id,
-        supplier: input.supplierId || product.supplier || null,
         quantityAtRequest: product.quantity,
         reorderLevelAtRequest: product.minimumStock,
         suggestedQuantity: input.suggestedQuantity,
