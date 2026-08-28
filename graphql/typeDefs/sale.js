@@ -6,7 +6,8 @@ export const saleTypeDefs = `#graphql
   }
 
   type SaleItem {
-    product: Product!
+    "Null if the referenced product was later removed from the catalog."
+    product: Product
     quantity: Int!
     price: Float!
   }

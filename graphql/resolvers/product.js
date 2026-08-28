@@ -1,6 +1,7 @@
 import { GraphQLError } from "graphql";
 import Product from "../../models/Product.js";
 import Category from "../../models/Category.js";
+import Sale from "../../models/Sale.js";
 import { ROLES } from "../../config/roles.js";
 import { requireAuth, requireRole } from "../../middleware/auth.js";
 import { syncStockNotifications } from "../../utils/notifications.js";
@@ -137,6 +138,15 @@ export const productResolvers = {
 
     deleteProduct: async (_p, { id }, context) => {
       requireRole(context, [ROLES.ADMIN, ROLES.MANAGER]);
+
+      const hasSales = await Sale.exists({ "items.product": id });
+      if (hasSales) {
+        throw new GraphQLError(
+          "This product has existing sales history and can't be deleted. Set it to INACTIVE or DISCONTINUED instead.",
+          { extensions: { code: "BAD_USER_INPUT" } }
+        );
+      }
+
       const result = await Product.findByIdAndDelete(id);
       if (!result) {
         throw new GraphQLError("Product not found.", { extensions: { code: "NOT_FOUND" } });
