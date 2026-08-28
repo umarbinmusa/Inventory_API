@@ -49,6 +49,12 @@ export const dashboardResolvers = {
       const lowStockCount = products.filter((p) => p.quantity > 0 && p.quantity <= p.minimumStock).length;
       const outOfStockCount = products.filter((p) => p.quantity === 0).length;
 
+      // Cost value of everything currently on the shelf. This falls on its
+      // own whenever a sale runs (createSale decrements Product.quantity),
+      // and rises whenever stock is created or restocked - no separate
+      // ledger needed, it's always derived from live quantity x cost.
+      const totalInventoryValue = products.reduce((sum, p) => sum + p.quantity * p.purchasePrice, 0);
+
       const buckets = {};
       sales.forEach((s) => {
         const key = monthKey(s.createdAt);
@@ -81,6 +87,7 @@ export const dashboardResolvers = {
         revenue,
         profit,
         expenses,
+        totalInventoryValue,
         lowStockCount,
         outOfStockCount,
         todaysSalesCount,

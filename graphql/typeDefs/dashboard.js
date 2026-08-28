@@ -17,6 +17,8 @@ export const dashboardTypeDefs = `#graphql
     revenue: Float!
     profit: Float!
     expenses: Float!
+    "Cost value of stock currently on hand (sum of purchasePrice x quantity across all products). Falls as sales deduct quantity, rises as new stock is created/restocked."
+    totalInventoryValue: Float!
     lowStockCount: Int!
     outOfStockCount: Int!
     todaysSalesCount: Int!
